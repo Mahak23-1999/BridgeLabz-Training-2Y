@@ -1,0 +1,101 @@
+class TextState {
+
+    String content;
+    TextState prev;
+    TextState next;
+
+    TextState(String content) {
+        this.content = content;
+        prev = null;
+        next = null;
+    }
+}
+
+class TextEditor {
+
+    TextState head;
+    TextState current;
+    int size = 0;
+    int MAX_HISTORY = 10;
+
+    // 1. Add new text state
+    void addState(String text) {
+
+        TextState newState = new TextState(text);
+
+        if (head == null) {
+            head = current = newState;
+            size = 1;
+            return;
+        }
+
+        current.next = newState;
+        newState.prev = current;
+        current = newState;
+
+        size++;
+
+        // limit history to 10 states
+        if (size > MAX_HISTORY) {
+            head = head.next;
+            head.prev = null;
+            size--;
+        }
+    }
+
+    // 2. Undo operation
+    void undo() {
+
+        if (current.prev != null) {
+            current = current.prev;
+            System.out.println("Undo performed");
+        } else {
+            System.out.println("No more undo available");
+        }
+    }
+
+    // 3. Redo operation
+    void redo() {
+
+        if (current.next != null) {
+            current = current.next;
+            System.out.println("Redo performed");
+        } else {
+            System.out.println("No redo available");
+        }
+    }
+
+    // 4. Display current state
+    void displayCurrentState() {
+
+        if (current != null)
+            System.out.println("Current Text: " + current.content);
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        TextEditor editor = new TextEditor();
+
+        editor.addState("Hello");
+        editor.addState("Hello World");
+        editor.addState("Hello World!");
+        editor.addState("Hello World!!");
+
+        editor.displayCurrentState();
+
+        System.out.println("\nUndo Operation:");
+        editor.undo();
+        editor.displayCurrentState();
+
+        System.out.println("\nUndo Again:");
+        editor.undo();
+        editor.displayCurrentState();
+
+        System.out.println("\nRedo Operation:");
+        editor.redo();
+        editor.displayCurrentState();
+    }
+}

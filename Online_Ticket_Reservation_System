@@ -1,0 +1,203 @@
+class TicketNode {
+
+    int ticketID;
+    String customerName;
+    String movieName;
+    String seatNumber;
+    String bookingTime;
+
+    TicketNode next;
+
+    TicketNode(int id, String customer, String movie, String seat, String time) {
+        this.ticketID = id;
+        this.customerName = customer;
+        this.movieName = movie;
+        this.seatNumber = seat;
+        this.bookingTime = time;
+        next = null;
+    }
+}
+
+class TicketReservation {
+
+    TicketNode head = null;
+
+    // 1. Add ticket at end
+    void addTicket(int id, String customer, String movie, String seat, String time) {
+
+        TicketNode newNode = new TicketNode(id, customer, movie, seat, time);
+
+        if (head == null) {
+            head = newNode;
+            newNode.next = head;
+            return;
+        }
+
+        TicketNode temp = head;
+
+        while (temp.next != head) {
+            temp = temp.next;
+        }
+
+        temp.next = newNode;
+        newNode.next = head;
+    }
+
+    // 2. Remove ticket by ID
+    void removeTicket(int id) {
+
+        if (head == null)
+            return;
+
+        TicketNode temp = head;
+        TicketNode prev = null;
+
+        do {
+
+            if (temp.ticketID == id) {
+
+                if (prev != null) {
+                    prev.next = temp.next;
+                } else {
+
+                    TicketNode last = head;
+
+                    while (last.next != head) {
+                        last = last.next;
+                    }
+
+                    head = head.next;
+                    last.next = head;
+                }
+
+                System.out.println("Ticket removed successfully");
+                return;
+            }
+
+            prev = temp;
+            temp = temp.next;
+
+        } while (temp != head);
+
+        System.out.println("Ticket not found");
+    }
+
+    // 3. Display tickets
+    void displayTickets() {
+
+        if (head == null)
+            return;
+
+        TicketNode temp = head;
+
+        do {
+            System.out.println(
+                temp.ticketID + " | " +
+                temp.customerName + " | " +
+                temp.movieName + " | " +
+                temp.seatNumber + " | " +
+                temp.bookingTime
+            );
+
+            temp = temp.next;
+
+        } while (temp != head);
+    }
+
+    // 4. Search by customer name
+    void searchByCustomer(String name) {
+
+        if (head == null)
+            return;
+
+        TicketNode temp = head;
+
+        do {
+
+            if (temp.customerName.equalsIgnoreCase(name)) {
+
+                System.out.println(
+                    temp.ticketID + " " +
+                    temp.customerName + " " +
+                    temp.movieName + " " +
+                    temp.seatNumber
+                );
+            }
+
+            temp = temp.next;
+
+        } while (temp != head);
+    }
+
+    // Search by movie
+    void searchByMovie(String movie) {
+
+        if (head == null)
+            return;
+
+        TicketNode temp = head;
+
+        do {
+
+            if (temp.movieName.equalsIgnoreCase(movie)) {
+
+                System.out.println(
+                    temp.ticketID + " " +
+                    temp.customerName + " " +
+                    temp.seatNumber
+                );
+            }
+
+            temp = temp.next;
+
+        } while (temp != head);
+    }
+
+    // 5. Count tickets
+    void countTickets() {
+
+        if (head == null) {
+            System.out.println("Total Tickets: 0");
+            return;
+        }
+
+        int count = 0;
+        TicketNode temp = head;
+
+        do {
+            count++;
+            temp = temp.next;
+        } while (temp != head);
+
+        System.out.println("Total Booked Tickets = " + count);
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        TicketReservation system = new TicketReservation();
+
+        system.addTicket(1, "Alice", "Avengers", "A1", "10:00 AM");
+        system.addTicket(2, "Bob", "Avatar", "B5", "10:05 AM");
+        system.addTicket(3, "Charlie", "Avengers", "C3", "10:10 AM");
+
+        System.out.println("Booked Tickets:");
+        system.displayTickets();
+
+        System.out.println("\nSearch by Customer:");
+        system.searchByCustomer("Alice");
+
+        System.out.println("\nSearch by Movie:");
+        system.searchByMovie("Avengers");
+
+        System.out.println("\nTotal Tickets:");
+        system.countTickets();
+
+        System.out.println("\nRemoving Ticket:");
+        system.removeTicket(2);
+
+        system.displayTickets();
+    }
+}

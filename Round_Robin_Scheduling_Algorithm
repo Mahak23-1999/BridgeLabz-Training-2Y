@@ -1,0 +1,158 @@
+class ProcessNode {
+
+    int processID;
+    int burstTime;
+    int priority;
+    int remainingTime;
+
+    ProcessNode next;
+
+    ProcessNode(int id, int burstTime, int priority) {
+        this.processID = id;
+        this.burstTime = burstTime;
+        this.priority = priority;
+        this.remainingTime = burstTime;
+        next = null;
+    }
+}
+
+class RoundRobinScheduler {
+
+    ProcessNode head = null;
+    int processCount = 0;
+
+    // 1. Add process at end
+    void addProcess(int id, int burstTime, int priority) {
+
+        ProcessNode newNode = new ProcessNode(id, burstTime, priority);
+
+        if (head == null) {
+            head = newNode;
+            newNode.next = head;
+        } else {
+
+            ProcessNode temp = head;
+
+            while (temp.next != head) {
+                temp = temp.next;
+            }
+
+            temp.next = newNode;
+            newNode.next = head;
+        }
+
+        processCount++;
+    }
+
+    // Display processes
+    void displayProcesses() {
+
+        if (head == null)
+            return;
+
+        ProcessNode temp = head;
+
+        do {
+            System.out.println("P" + temp.processID + " BT:" + temp.remainingTime + " Priority:" + temp.priority);
+            temp = temp.next;
+        } while (temp != head);
+    }
+
+    // 2. Remove process
+    void removeProcess(ProcessNode prev, ProcessNode current) {
+
+        if (current == head && current.next == head) {
+            head = null;
+            return;
+        }
+
+        if (current == head) {
+
+            ProcessNode last = head;
+
+            while (last.next != head) {
+                last = last.next;
+            }
+
+            head = head.next;
+            last.next = head;
+        } else {
+            prev.next = current.next;
+        }
+    }
+
+    // 3. Round Robin Simulation
+    void roundRobin(int quantum) {
+
+        if (head == null)
+            return;
+
+        int totalWaiting = 0;
+        int totalTurnaround = 0;
+
+        ProcessNode current = head;
+        ProcessNode prev = null;
+
+        int time = 0;
+
+        while (head != null) {
+
+            if (current.remainingTime > quantum) {
+
+                time += quantum;
+                current.remainingTime -= quantum;
+
+                prev = current;
+                current = current.next;
+
+            } else {
+
+                time += current.remainingTime;
+
+                totalTurnaround += time;
+                totalWaiting += (time - current.burstTime);
+
+                System.out.println("Process P" + current.processID + " completed");
+
+                removeProcess(prev, current);
+
+                processCount--;
+
+                if (processCount == 0)
+                    break;
+
+                if (prev != null)
+                    current = prev.next;
+                else
+                    current = head;
+            }
+
+            System.out.println("\nQueue After Round:");
+            displayProcesses();
+        }
+
+        double avgWaiting = (double) totalWaiting / processCount;
+        double avgTurnaround = (double) totalTurnaround / processCount;
+
+        System.out.println("\nAverage Waiting Time = " + avgWaiting);
+        System.out.println("Average Turnaround Time = " + avgTurnaround);
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        RoundRobinScheduler scheduler = new RoundRobinScheduler();
+
+        scheduler.addProcess(1, 10, 2);
+        scheduler.addProcess(2, 5, 1);
+        scheduler.addProcess(3, 8, 3);
+
+        System.out.println("Initial Process Queue:");
+        scheduler.displayProcesses();
+
+        System.out.println("\nRound Robin Execution:");
+        scheduler.roundRobin(4);
+    }
+}

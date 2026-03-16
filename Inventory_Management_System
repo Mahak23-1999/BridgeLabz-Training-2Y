@@ -1,0 +1,231 @@
+class ItemNode {
+
+    int itemID;
+    String itemName;
+    int quantity;
+    double price;
+    ItemNode next;
+
+    ItemNode(int itemID, String itemName, int quantity, double price) {
+        this.itemID = itemID;
+        this.itemName = itemName;
+        this.quantity = quantity;
+        this.price = price;
+        next = null;
+    }
+}
+
+class InventoryList {
+
+    ItemNode head;
+
+    // 1. Add at beginning
+    void addAtBeginning(int id, String name, int qty, double price) {
+
+        ItemNode newNode = new ItemNode(id, name, qty, price);
+        newNode.next = head;
+        head = newNode;
+    }
+
+    // Add at end
+    void addAtEnd(int id, String name, int qty, double price) {
+
+        ItemNode newNode = new ItemNode(id, name, qty, price);
+
+        if (head == null) {
+            head = newNode;
+            return;
+        }
+
+        ItemNode temp = head;
+
+        while (temp.next != null) {
+            temp = temp.next;
+        }
+
+        temp.next = newNode;
+    }
+
+    // Add at position
+    void addAtPosition(int pos, int id, String name, int qty, double price) {
+
+        if (pos == 1) {
+            addAtBeginning(id, name, qty, price);
+            return;
+        }
+
+        ItemNode newNode = new ItemNode(id, name, qty, price);
+        ItemNode temp = head;
+
+        for (int i = 1; i < pos - 1 && temp != null; i++) {
+            temp = temp.next;
+        }
+
+        if (temp == null) {
+            System.out.println("Invalid Position");
+            return;
+        }
+
+        newNode.next = temp.next;
+        temp.next = newNode;
+    }
+
+    // 2. Remove item by ID
+    void removeItem(int id) {
+
+        if (head == null)
+            return;
+
+        if (head.itemID == id) {
+            head = head.next;
+            return;
+        }
+
+        ItemNode temp = head;
+
+        while (temp.next != null && temp.next.itemID != id) {
+            temp = temp.next;
+        }
+
+        if (temp.next == null)
+            System.out.println("Item not found");
+        else
+            temp.next = temp.next.next;
+    }
+
+    // 3. Update quantity
+    void updateQuantity(int id, int newQty) {
+
+        ItemNode temp = head;
+
+        while (temp != null) {
+
+            if (temp.itemID == id) {
+                temp.quantity = newQty;
+                System.out.println("Quantity updated");
+                return;
+            }
+
+            temp = temp.next;
+        }
+
+        System.out.println("Item not found");
+    }
+
+    // 4. Search by ID
+    void searchByID(int id) {
+
+        ItemNode temp = head;
+
+        while (temp != null) {
+
+            if (temp.itemID == id) {
+                System.out.println(temp.itemID + " " + temp.itemName + " " + temp.quantity + " " + temp.price);
+                return;
+            }
+
+            temp = temp.next;
+        }
+
+        System.out.println("Item not found");
+    }
+
+    // Search by Name
+    void searchByName(String name) {
+
+        ItemNode temp = head;
+
+        while (temp != null) {
+
+            if (temp.itemName.equalsIgnoreCase(name)) {
+                System.out.println(temp.itemID + " " + temp.itemName + " " + temp.quantity + " " + temp.price);
+            }
+
+            temp = temp.next;
+        }
+    }
+
+    // 5. Total inventory value
+    void totalInventoryValue() {
+
+        ItemNode temp = head;
+        double total = 0;
+
+        while (temp != null) {
+            total += temp.price * temp.quantity;
+            temp = temp.next;
+        }
+
+        System.out.println("Total Inventory Value = " + total);
+    }
+
+    // 6. Sort by price (ascending)
+    void sortByPrice() {
+
+        if (head == null)
+            return;
+
+        for (ItemNode i = head; i.next != null; i = i.next) {
+
+            for (ItemNode j = i.next; j != null; j = j.next) {
+
+                if (i.price > j.price) {
+
+                    int tempID = i.itemID;
+                    String tempName = i.itemName;
+                    int tempQty = i.quantity;
+                    double tempPrice = i.price;
+
+                    i.itemID = j.itemID;
+                    i.itemName = j.itemName;
+                    i.quantity = j.quantity;
+                    i.price = j.price;
+
+                    j.itemID = tempID;
+                    j.itemName = tempName;
+                    j.quantity = tempQty;
+                    j.price = tempPrice;
+                }
+            }
+        }
+    }
+
+    // Display items
+    void display() {
+
+        ItemNode temp = head;
+
+        while (temp != null) {
+            System.out.println(temp.itemID + " " + temp.itemName + " " + temp.quantity + " " + temp.price);
+            temp = temp.next;
+        }
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        InventoryList list = new InventoryList();
+
+        list.addAtBeginning(1, "Laptop", 5, 70000);
+        list.addAtEnd(2, "Mouse", 20, 500);
+        list.addAtEnd(3, "Keyboard", 10, 1500);
+
+        System.out.println("Inventory Items:");
+        list.display();
+
+        System.out.println("\nUpdating Quantity:");
+        list.updateQuantity(2, 25);
+
+        System.out.println("\nSearching Item:");
+        list.searchByID(1);
+
+        System.out.println("\nTotal Inventory Value:");
+        list.totalInventoryValue();
+
+        System.out.println("\nSorting by Price:");
+        list.sortByPrice();
+        list.display();
+    }
+}

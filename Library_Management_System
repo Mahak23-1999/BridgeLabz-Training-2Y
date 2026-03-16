@@ -1,0 +1,241 @@
+class BookNode {
+
+    int bookID;
+    String title;
+    String author;
+    String genre;
+    String status;
+
+    BookNode next;
+    BookNode prev;
+
+    BookNode(int id, String title, String author, String genre, String status) {
+        this.bookID = id;
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+        this.status = status;
+        next = null;
+        prev = null;
+    }
+}
+
+class LibraryList {
+
+    BookNode head;
+    BookNode tail;
+
+    // 1. Add at beginning
+    void addAtBeginning(int id, String title, String author, String genre, String status) {
+
+        BookNode newNode = new BookNode(id, title, author, genre, status);
+
+        if (head == null) {
+            head = tail = newNode;
+            return;
+        }
+
+        newNode.next = head;
+        head.prev = newNode;
+        head = newNode;
+    }
+
+    // Add at end
+    void addAtEnd(int id, String title, String author, String genre, String status) {
+
+        BookNode newNode = new BookNode(id, title, author, genre, status);
+
+        if (tail == null) {
+            head = tail = newNode;
+            return;
+        }
+
+        tail.next = newNode;
+        newNode.prev = tail;
+        tail = newNode;
+    }
+
+    // Add at specific position
+    void addAtPosition(int pos, int id, String title, String author, String genre, String status) {
+
+        if (pos == 1) {
+            addAtBeginning(id, title, author, genre, status);
+            return;
+        }
+
+        BookNode newNode = new BookNode(id, title, author, genre, status);
+        BookNode temp = head;
+
+        for (int i = 1; i < pos - 1 && temp != null; i++) {
+            temp = temp.next;
+        }
+
+        if (temp == null) {
+            System.out.println("Invalid Position");
+            return;
+        }
+
+        newNode.next = temp.next;
+        newNode.prev = temp;
+
+        if (temp.next != null)
+            temp.next.prev = newNode;
+
+        temp.next = newNode;
+
+        if (newNode.next == null)
+            tail = newNode;
+    }
+
+    // 2. Remove book by ID
+    void removeBook(int id) {
+
+        BookNode temp = head;
+
+        while (temp != null) {
+
+            if (temp.bookID == id) {
+
+                if (temp.prev != null)
+                    temp.prev.next = temp.next;
+                else
+                    head = temp.next;
+
+                if (temp.next != null)
+                    temp.next.prev = temp.prev;
+                else
+                    tail = temp.prev;
+
+                System.out.println("Book removed successfully");
+                return;
+            }
+
+            temp = temp.next;
+        }
+
+        System.out.println("Book not found");
+    }
+
+    // 3. Search by title
+    void searchByTitle(String title) {
+
+        BookNode temp = head;
+
+        while (temp != null) {
+
+            if (temp.title.equalsIgnoreCase(title)) {
+                System.out.println(temp.bookID + " " + temp.title + " " + temp.author + " " + temp.genre + " " + temp.status);
+                return;
+            }
+
+            temp = temp.next;
+        }
+
+        System.out.println("Book not found");
+    }
+
+    // Search by author
+    void searchByAuthor(String author) {
+
+        BookNode temp = head;
+
+        while (temp != null) {
+
+            if (temp.author.equalsIgnoreCase(author)) {
+                System.out.println(temp.bookID + " " + temp.title + " " + temp.author + " " + temp.genre + " " + temp.status);
+            }
+
+            temp = temp.next;
+        }
+    }
+
+    // 4. Update availability
+    void updateStatus(int id, String newStatus) {
+
+        BookNode temp = head;
+
+        while (temp != null) {
+
+            if (temp.bookID == id) {
+                temp.status = newStatus;
+                System.out.println("Availability updated");
+                return;
+            }
+
+            temp = temp.next;
+        }
+
+        System.out.println("Book not found");
+    }
+
+    // 5. Display forward
+    void displayForward() {
+
+        BookNode temp = head;
+
+        while (temp != null) {
+            System.out.println(temp.bookID + " " + temp.title + " " + temp.author + " " + temp.genre + " " + temp.status);
+            temp = temp.next;
+        }
+    }
+
+    // Display reverse
+    void displayReverse() {
+
+        BookNode temp = tail;
+
+        while (temp != null) {
+            System.out.println(temp.bookID + " " + temp.title + " " + temp.author + " " + temp.genre + " " + temp.status);
+            temp = temp.prev;
+        }
+    }
+
+    // 6. Count total books
+    void countBooks() {
+
+        int count = 0;
+        BookNode temp = head;
+
+        while (temp != null) {
+            count++;
+            temp = temp.next;
+        }
+
+        System.out.println("Total Books = " + count);
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        LibraryList list = new LibraryList();
+
+        list.addAtBeginning(1, "The Alchemist", "Paulo Coelho", "Fiction", "Available");
+        list.addAtEnd(2, "Harry Potter", "J.K. Rowling", "Fantasy", "Available");
+        list.addAtEnd(3, "Atomic Habits", "James Clear", "Self Help", "Available");
+
+        System.out.println("Library Books (Forward):");
+        list.displayForward();
+
+        System.out.println("\nLibrary Books (Reverse):");
+        list.displayReverse();
+
+        System.out.println("\nSearching Book:");
+        list.searchByTitle("Harry Potter");
+
+        System.out.println("\nUpdating Status:");
+        list.updateStatus(2, "Issued");
+
+        System.out.println("\nAfter Update:");
+        list.displayForward();
+
+        System.out.println("\nTotal Books:");
+        list.countBooks();
+
+        System.out.println("\nRemoving Book:");
+        list.removeBook(1);
+
+        list.displayForward();
+    }
+}

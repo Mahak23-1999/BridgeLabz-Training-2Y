@@ -1,0 +1,197 @@
+class TaskNode {
+
+    int taskID;
+    String taskName;
+    String priority;
+    String dueDate;
+
+    TaskNode next;
+
+    TaskNode(int taskID, String taskName, String priority, String dueDate) {
+        this.taskID = taskID;
+        this.taskName = taskName;
+        this.priority = priority;
+        this.dueDate = dueDate;
+        next = null;
+    }
+}
+
+class CircularTaskList {
+
+    TaskNode head = null;
+    TaskNode current = null;
+
+    // 1. Add at beginning
+    void addAtBeginning(int id, String name, String priority, String dueDate) {
+
+        TaskNode newNode = new TaskNode(id, name, priority, dueDate);
+
+        if (head == null) {
+            head = newNode;
+            newNode.next = head;
+            current = head;
+            return;
+        }
+
+        TaskNode temp = head;
+
+        while (temp.next != head) {
+            temp = temp.next;
+        }
+
+        newNode.next = head;
+        temp.next = newNode;
+        head = newNode;
+    }
+
+    // Add at end
+    void addAtEnd(int id, String name, String priority, String dueDate) {
+
+        TaskNode newNode = new TaskNode(id, name, priority, dueDate);
+
+        if (head == null) {
+            head = newNode;
+            newNode.next = head;
+            current = head;
+            return;
+        }
+
+        TaskNode temp = head;
+
+        while (temp.next != head) {
+            temp = temp.next;
+        }
+
+        temp.next = newNode;
+        newNode.next = head;
+    }
+
+    // Add at specific position
+    void addAtPosition(int pos, int id, String name, String priority, String dueDate) {
+
+        if (pos == 1) {
+            addAtBeginning(id, name, priority, dueDate);
+            return;
+        }
+
+        TaskNode newNode = new TaskNode(id, name, priority, dueDate);
+        TaskNode temp = head;
+
+        for (int i = 1; i < pos - 1 && temp.next != head; i++) {
+            temp = temp.next;
+        }
+
+        newNode.next = temp.next;
+        temp.next = newNode;
+    }
+
+    // 2. Remove task by Task ID
+    void removeTask(int id) {
+
+        if (head == null)
+            return;
+
+        TaskNode temp = head;
+        TaskNode prev = null;
+
+        do {
+
+            if (temp.taskID == id) {
+
+                if (prev != null) {
+                    prev.next = temp.next;
+                } else {
+
+                    TaskNode last = head;
+                    while (last.next != head) {
+                        last = last.next;
+                    }
+
+                    head = head.next;
+                    last.next = head;
+                }
+
+                System.out.println("Task removed successfully");
+                return;
+            }
+
+            prev = temp;
+            temp = temp.next;
+
+        } while (temp != head);
+
+        System.out.println("Task not found");
+    }
+
+    // 3. View current task and move to next
+    void viewNextTask() {
+
+        if (current == null)
+            return;
+
+        System.out.println("Current Task:");
+        System.out.println(current.taskID + " " + current.taskName + " " + current.priority + " " + current.dueDate);
+
+        current = current.next;
+    }
+
+    // 4. Display all tasks
+    void displayTasks() {
+
+        if (head == null)
+            return;
+
+        TaskNode temp = head;
+
+        do {
+            System.out.println(temp.taskID + " " + temp.taskName + " " + temp.priority + " " + temp.dueDate);
+            temp = temp.next;
+        } while (temp != head);
+    }
+
+    // 5. Search by priority
+    void searchByPriority(String priority) {
+
+        if (head == null)
+            return;
+
+        TaskNode temp = head;
+
+        do {
+
+            if (temp.priority.equalsIgnoreCase(priority)) {
+                System.out.println(temp.taskID + " " + temp.taskName + " " + temp.priority + " " + temp.dueDate);
+            }
+
+            temp = temp.next;
+
+        } while (temp != head);
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        CircularTaskList list = new CircularTaskList();
+
+        list.addAtBeginning(1, "Complete Assignment", "High", "20 Mar");
+        list.addAtEnd(2, "Prepare Presentation", "Medium", "22 Mar");
+        list.addAtEnd(3, "Study DSA", "High", "25 Mar");
+
+        System.out.println("All Tasks:");
+        list.displayTasks();
+
+        System.out.println("\nNext Task:");
+        list.viewNextTask();
+
+        System.out.println("\nSearch High Priority Tasks:");
+        list.searchByPriority("High");
+
+        System.out.println("\nRemoving Task ID 2:");
+        list.removeTask(2);
+
+        System.out.println("\nUpdated Task List:");
+        list.displayTasks();
+    }
+}
